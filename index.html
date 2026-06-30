@@ -7,10 +7,14 @@
     <style>
         :root {
             --bg-color: #ffffff;
-            --text-main: #000000;
-            --text-sub: #b3b3b3; /* Lighter text color */
+            --text-main: #333333; /* Darker font color for readability */
+            --text-sub: #7a7a7a;
             --water-color: #4992ff;
-            --water-bg: #f5f9ff;
+            --water-bg: #f2f7ff;
+            --btn-blue-text: #2563eb;
+            --btn-blue-bg: #eff6ff; /* Lighter version of font color */
+            --btn-red-text: #e11d48;
+            --btn-red-bg: #fff1f2;  /* Lighter version of font color */
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -21,37 +25,37 @@
             align-items: center;
             height: 100vh;
         }
-        /* Extra small compact card design */
+        /* Wider card profile */
         .tracker-card {
             background: var(--bg-color);
-            padding: 16px 14px;
+            padding: 20px 24px;
             border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
             text-align: center;
-            width: 170px; /* Highly compact profile */
+            width: 230px; /* Increased card width */
             border: 1px solid #eaeaea;
             box-sizing: border-box;
         }
         .header {
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
         .liters-display {
-            font-size: 1.15rem; /* Noticeably smaller */
-            font-weight: 500;
-            color: var(--text-sub); /* Applied lighter color profile */
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-main); /* Updated to darker font color */
             margin: 0;
         }
         .percentage-display {
             font-size: 0.75rem;
-            color: #8a8a8a;
-            margin: 1px 0 0 0;
+            color: var(--text-sub);
+            margin: 2px 0 0 0;
         }
-        /* Fluid Circle Layout */
+        /* Wave Bowl Container */
         .circle-container {
             position: relative;
-            width: 110px; /* Smaller footprint */
+            width: 110px;
             height: 110px;
-            margin: 0 auto 12px auto;
+            margin: 0 auto 16px auto;
             border-radius: 50%;
             background: var(--water-bg);
             overflow: hidden;
@@ -65,10 +69,9 @@
             width: 100%;
             height: 5%; 
             background-color: var(--water-color);
-            transform: translate3d(0, 0, 0);
+            transform: translate33d(0, 0, 0);
             transition: height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        /* Dynamic SVG multi-crested wave definitions */
         .wave-wrapper svg {
             position: absolute;
             left: 0;
@@ -78,19 +81,19 @@
         .wave-back {
             top: -14px;
             fill: var(--water-color);
-            opacity: 0.4;
-            animation: wave-slide 3s linear infinite;
+            opacity: 0.45;
+            animation: wave-slide 2.8s linear infinite;
         }
         .wave-front {
             top: -11px;
             fill: var(--water-color);
-            animation: wave-slide 1.6s linear infinite;
+            animation: wave-slide 1.5s linear infinite;
         }
         @keyframes wave-slide {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-200px, 0, 0); }
         }
-        /* Layered transparent canvas overlay for rendering micro bubbles */
+        /* Bubble Rendering Layer */
         canvas {
             position: absolute;
             top: 0;
@@ -98,46 +101,50 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: 10;
         }
-        /* Minimalist Button Actions */
+        /* Side-by-Side Action Row */
         .btn-group {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
-            align-items: center;
-        }
-        button.add-btn {
-            background: #2563eb;
-            color: #ffffff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
+            gap: 10px; /* Places them cleanly side-by-side */
             width: 100%;
         }
+        button {
+            border: none;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.82rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        button:active {
+            transform: scale(0.97);
+        }
+        /* Smaller +621ml Button with a pastel blue background tint */
+        button.add-btn {
+            background: var(--btn-blue-bg);
+            color: var(--btn-blue-text);
+            flex: 2; /* Takes up slightly more space than reset */
+        }
         button.add-btn:hover {
-            background: #1d4ed8;
+            background: #dbeafe;
         }
         button.add-btn:disabled {
             background: #f3f4f6;
             color: #9ca3af;
             cursor: not-allowed;
+            transform: none;
         }
+        /* Reset Button beside the tracking button with a pastel red background tint */
         button.reset-btn {
-            background: transparent;
-            border: none;
-            color: #f43f5e;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 400;
-            padding: 2px 8px;
-            border-radius: 4px;
+            background: var(--btn-red-bg);
+            color: var(--btn-red-text);
+            flex: 1;
         }
         button.reset-btn:hover {
-            background: rgba(244, 63, 94, 0.05);
+            background: #ffe4e6;
         }
     </style>
 </head>
@@ -151,14 +158,12 @@
 
         <div class="circle-container">
             <div class="wave-wrapper" id="waveFill">
-                <!-- Advanced multi-crested choppy sine paths matching Blocs structure -->
                 <svg class="wave-back" viewBox="0 0 200 22" preserveAspectRatio="none">
                     <path d="M0,10 Q25,3 50,10 T100,10 T150,10 T200,10 L200,30 L0,30 Z"></path>
                 </svg>
                 <svg class="wave-front" viewBox="0 0 200 22" preserveAspectRatio="none">
                     <path d="M0,8 Q25,15 50,8 T100,8 T150,8 T200,8 L200,30 L0,30 Z"></path>
                 </svg>
-                <!-- Canvas component to draw animated fizzy water bubble streams -->
                 <canvas id="bubbleCanvas"></canvas>
             </div>
         </div>
@@ -204,37 +209,40 @@
             updateUI();
         }
 
-        // --- HTML5 Canvas Interactive Bubble Generation Engine ---
+        // --- Optimized High-Visibility Bubble System ---
         const canvas = document.getElementById('bubbleCanvas');
         const ctx = canvas.getContext('2d');
         let bubbles = [];
 
         function resizeCanvas() {
-            canvas.width = canvas.parentElement.offsetWidth;
-            canvas.height = canvas.parentElement.offsetHeight;
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
         }
         window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        // Initial tiny delay to read exact parent bounding box layout properties cleanly
+        setTimeout(resizeCanvas, 50);
 
         class Bubble {
             constructor() {
                 this.x = Math.random() * canvas.width;
-                // Generate from the bottom floor of container
-                this.y = canvas.height + Math.random() * 20; 
-                this.radius = Math.random() * 2.5 + 0.5;
-                this.speed = Math.random() * 1 + 0.4;
-                this.opacity = Math.random() * 0.5 + 0.2;
-                this.wobble = Math.random() * 2;
-                this.wobbleSpeed = Math.random() * 0.05 + 0.02;
+                this.y = canvas.height + 10; 
+                // Increased dimensions for clear visibility
+                this.radius = Math.random() * 3.5 + 1.5; 
+                this.speed = Math.random() * 0.8 + 0.5;
+                // Sharper opacity value
+                this.opacity = Math.random() * 0.6 + 0.4; 
+                this.wobble = Math.random() * 10;
+                this.wobbleSpeed = Math.random() * 0.04 + 0.02;
             }
             update() {
                 this.y -= this.speed;
                 this.wobble += this.wobbleSpeed;
-                this.x += Math.sin(this.wobble) * 0.2; // Smooth drifting horizontal drift
+                this.x += Math.sin(this.wobble) * 0.3;
             }
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                // Pure crisp white fill to stand out from the bright water color tones
                 ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
                 ctx.fill();
             }
@@ -243,8 +251,8 @@
         function animateBubbles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Periodically inject new bubbles if water is present
-            if (currentMl > 0 && bubbles.length < 18 && Math.random() < 0.1) {
+            // Constantly inject bubble arrays if user has drunk water
+            if (currentMl > 0 && bubbles.length < 25 && Math.random() < 0.15) {
                 bubbles.push(new Bubble());
             }
 
@@ -252,15 +260,14 @@
                 bubbles[i].update();
                 bubbles[i].draw();
 
-                // Destroy bubbles when they float past the surface
-                if (bubbles[i].y < 15) {
+                // Clear out arrays as they rise above the water fill area
+                if (bubbles[i].y < 10) {
                     bubbles.splice(i, 1);
                 }
             }
             requestAnimationFrame(animateBubbles);
         }
         
-        // Boot system scripts
         updateUI();
         animateBubbles();
     </script>
