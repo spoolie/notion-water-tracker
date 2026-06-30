@@ -69,7 +69,7 @@
             width: 100%;
             height: 5%; 
             background-color: var(--water-color);
-            transform: translate33d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
             transition: height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         .wave-wrapper svg {
@@ -92,16 +92,6 @@
         @keyframes wave-slide {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-200px, 0, 0); }
-        }
-        /* Bubble Rendering Layer */
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
         }
         /* Side-by-Side Action Row */
         .btn-group {
@@ -164,7 +154,6 @@
                 <svg class="wave-front" viewBox="0 0 200 22" preserveAspectRatio="none">
                     <path d="M0,8 Q25,15 50,8 T100,8 T150,8 T200,8 L200,30 L0,30 Z"></path>
                 </svg>
-                <canvas id="bubbleCanvas"></canvas>
             </div>
         </div>
 
@@ -209,67 +198,8 @@
             updateUI();
         }
 
-        // --- Optimized High-Visibility Bubble System ---
-        const canvas = document.getElementById('bubbleCanvas');
-        const ctx = canvas.getContext('2d');
-        let bubbles = [];
-
-        function resizeCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        // Initial tiny delay to read exact parent bounding box layout properties cleanly
-        setTimeout(resizeCanvas, 50);
-
-        class Bubble {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = canvas.height + 10; 
-                // Increased dimensions for clear visibility
-                this.radius = Math.random() * 3.5 + 1.5; 
-                this.speed = Math.random() * 0.8 + 0.5;
-                // Sharper opacity value
-                this.opacity = Math.random() * 0.6 + 0.4; 
-                this.wobble = Math.random() * 10;
-                this.wobbleSpeed = Math.random() * 0.04 + 0.02;
-            }
-            update() {
-                this.y -= this.speed;
-                this.wobble += this.wobbleSpeed;
-                this.x += Math.sin(this.wobble) * 0.3;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                // Pure crisp white fill to stand out from the bright water color tones
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-                ctx.fill();
-            }
-        }
-
-        function animateBubbles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Constantly inject bubble arrays if user has drunk water
-            if (currentMl > 0 && bubbles.length < 25 && Math.random() < 0.15) {
-                bubbles.push(new Bubble());
-            }
-
-            for (let i = bubbles.length - 1; i >= 0; i--) {
-                bubbles[i].update();
-                bubbles[i].draw();
-
-                // Clear out arrays as they rise above the water fill area
-                if (bubbles[i].y < 10) {
-                    bubbles.splice(i, 1);
-                }
-            }
-            requestAnimationFrame(animateBubbles);
-        }
-        
+        // Run UI update script immediately on mount
         updateUI();
-        animateBubbles();
     </script>
 </body>
 </html>
