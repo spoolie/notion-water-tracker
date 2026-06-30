@@ -8,12 +8,12 @@
         :root {
             --bg-color: #ffffff;
             --text-main: #000000;
-            --text-sub: #7c7c7c;
-            --water-color: #5c8df6;
-            --water-bg: #f3f3f3;
+            --text-sub: #b3b3b3; /* Lighter text color */
+            --water-color: #4992ff;
+            --water-bg: #f5f9ff;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: transparent;
             margin: 0;
             display: flex;
@@ -21,42 +21,41 @@
             align-items: center;
             height: 100vh;
         }
-        /* Smaller card dimensions */
+        /* Extra small compact card design */
         .tracker-card {
             background: var(--bg-color);
-            padding: 20px 16px;
+            padding: 16px 14px;
             border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
             text-align: center;
-            width: 220px; /* Reduced width */
-            border: 1px solid #ededed;
+            width: 170px; /* Highly compact profile */
+            border: 1px solid #eaeaea;
             box-sizing: border-box;
         }
         .header {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .liters-display {
-            font-size: 1.3rem; /* Slightly smaller text */
-            font-weight: 600;
-            color: var(--text-main);
+            font-size: 1.15rem; /* Noticeably smaller */
+            font-weight: 500;
+            color: var(--text-sub); /* Applied lighter color profile */
             margin: 0;
         }
         .percentage-display {
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            margin: 2px 0 0 0;
+            font-size: 0.75rem;
+            color: #8a8a8a;
+            margin: 1px 0 0 0;
         }
-        /* Smaller Fluid Circle Container */
+        /* Fluid Circle Layout */
         .circle-container {
             position: relative;
-            width: 140px; /* Reduced from 190px */
-            height: 140px; /* Reduced from 190px */
-            margin: 0 auto 16px auto;
+            width: 110px; /* Smaller footprint */
+            height: 110px;
+            margin: 0 auto 12px auto;
             border-radius: 50%;
             background: var(--water-bg);
             overflow: hidden;
-            border: 1px solid #f0f0f0;
-            /* Fixes overflow bugs on some browsers */
+            border: 1.5px solid #e1eeff;
             transform: translateZ(0); 
         }
         .wave-wrapper {
@@ -66,78 +65,79 @@
             width: 100%;
             height: 5%; 
             background-color: var(--water-color);
-            /* Hardware acceleration for smooth movement */
             transform: translate3d(0, 0, 0);
-            transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        /* Ultra-smooth looping SVG animations */
+        /* Dynamic SVG multi-crested wave definitions */
         .wave-wrapper svg {
             position: absolute;
             left: 0;
-            width: 400px; /* Long enough to cycle endlessly without clipping */
-            height: 28px;
-            background: transparent;
+            width: 400px;
+            height: 22px;
         }
         .wave-back {
-            top: -18px;
-            fill: var(--water-color);
-            opacity: 0.45;
-            /* Slower background wave for depth */
-            animation: wave-slide 4s linear infinite;
-        }
-        .wave-front {
             top: -14px;
             fill: var(--water-color);
-            /* Faster foreground wave for dynamic parallax effect */
-            animation: wave-slide 2.2s linear infinite;
+            opacity: 0.4;
+            animation: wave-slide 3s linear infinite;
         }
-        /* CSS keyframes targeting transform for 60fps rendering */
+        .wave-front {
+            top: -11px;
+            fill: var(--water-color);
+            animation: wave-slide 1.6s linear infinite;
+        }
         @keyframes wave-slide {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-200px, 0, 0); }
         }
-        /* UI Control Layout */
+        /* Layered transparent canvas overlay for rendering micro bubbles */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        /* Minimalist Button Actions */
         .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
         button.add-btn {
-            background: #eef2ff;
-            color: #2563eb;
+            background: #2563eb;
+            color: #ffffff;
             border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
+            font-weight: 500;
+            font-size: 0.85rem;
             transition: all 0.2s ease;
             width: 100%;
         }
         button.add-btn:hover {
-            background: #dbeafe;
-            transform: scale(1.01);
+            background: #1d4ed8;
         }
         button.add-btn:disabled {
             background: #f3f4f6;
             color: #9ca3af;
             cursor: not-allowed;
-            transform: none;
         }
         button.reset-btn {
             background: transparent;
             border: none;
-            color: #ef4444;
+            color: #f43f5e;
             cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
-            padding: 2px 10px;
-            border-radius: 6px;
-            transition: background 0.2s;
+            font-size: 0.75rem;
+            font-weight: 400;
+            padding: 2px 8px;
+            border-radius: 4px;
         }
         button.reset-btn:hover {
-            background: rgba(239, 68, 68, 0.08);
+            background: rgba(244, 63, 94, 0.05);
         }
     </style>
 </head>
@@ -146,24 +146,26 @@
     <div class="tracker-card">
         <div class="header">
             <div class="liters-display" id="litersText">0 Liters</div>
-            <div class="percentage-display" id="percentText">0% of your goal</div>
+            <div class="percentage-display" id="percentText">0% Done</div>
         </div>
 
         <div class="circle-container">
             <div class="wave-wrapper" id="waveFill">
-                <!-- Mathematically looping continuous sine wave SVG shapes -->
-                <svg class="wave-back" viewBox="0 0 200 28" preserveAspectRatio="none">
-                    <path d="M0,15 C30,5 70,25 100,15 C130,5 170,25 200,15 L200,30 L0,30 Z"></path>
+                <!-- Advanced multi-crested choppy sine paths matching Blocs structure -->
+                <svg class="wave-back" viewBox="0 0 200 22" preserveAspectRatio="none">
+                    <path d="M0,10 Q25,3 50,10 T100,10 T150,10 T200,10 L200,30 L0,30 Z"></path>
                 </svg>
-                <svg class="wave-front" viewBox="0 0 200 28" preserveAspectRatio="none">
-                    <path d="M0,10 C40,25 60,0 100,10 C140,25 160,0 200,10 L200,30 L0,30 Z"></path>
+                <svg class="wave-front" viewBox="0 0 200 22" preserveAspectRatio="none">
+                    <path d="M0,8 Q25,15 50,8 T100,8 T150,8 T200,8 L200,30 L0,30 Z"></path>
                 </svg>
+                <!-- Canvas component to draw animated fizzy water bubble streams -->
+                <canvas id="bubbleCanvas"></canvas>
             </div>
         </div>
 
         <div class="btn-group">
             <button class="add-btn" id="addButton" onclick="addWater()">+621 ml</button>
-            <button class="reset-btn" onclick="resetWater()">Reset Progress</button>
+            <button class="reset-btn" onclick="resetWater()">Reset</button>
         </div>
     </div>
 
@@ -181,9 +183,8 @@
             const percentage = Math.round((currentMl / GOAL) * 100);
 
             document.getElementById('litersText').innerText = `${parseFloat(liters)} Liters`;
-            document.getElementById('percentText').innerText = `${percentage}% of your goal`;
+            document.getElementById('percentText').innerText = `${percentage}% Done`;
 
-            // Sets height layout constraints
             const fillHeight = currentMl === 0 ? 6 : Math.min(6 + (percentage * 0.94), 100);
             document.getElementById('waveFill').style.height = `${fillHeight}%`;
 
@@ -203,7 +204,65 @@
             updateUI();
         }
 
+        // --- HTML5 Canvas Interactive Bubble Generation Engine ---
+        const canvas = document.getElementById('bubbleCanvas');
+        const ctx = canvas.getContext('2d');
+        let bubbles = [];
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Bubble {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                // Generate from the bottom floor of container
+                this.y = canvas.height + Math.random() * 20; 
+                this.radius = Math.random() * 2.5 + 0.5;
+                this.speed = Math.random() * 1 + 0.4;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.wobble = Math.random() * 2;
+                this.wobbleSpeed = Math.random() * 0.05 + 0.02;
+            }
+            update() {
+                this.y -= this.speed;
+                this.wobble += this.wobbleSpeed;
+                this.x += Math.sin(this.wobble) * 0.2; // Smooth drifting horizontal drift
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        function animateBubbles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Periodically inject new bubbles if water is present
+            if (currentMl > 0 && bubbles.length < 18 && Math.random() < 0.1) {
+                bubbles.push(new Bubble());
+            }
+
+            for (let i = bubbles.length - 1; i >= 0; i--) {
+                bubbles[i].update();
+                bubbles[i].draw();
+
+                // Destroy bubbles when they float past the surface
+                if (bubbles[i].y < 15) {
+                    bubbles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animateBubbles);
+        }
+        
+        // Boot system scripts
         updateUI();
+        animateBubbles();
     </script>
 </body>
 </html>
