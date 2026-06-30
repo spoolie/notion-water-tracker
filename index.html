@@ -6,7 +6,7 @@
     <title>Notion Water Tracker</title>
     <style>
         :root {
-            --bg-color: #ffffff; /* Notion Light Mode / Clean White */
+            --bg-color: #ffffff;
             --text-main: #000000;
             --text-sub: #7c7c7c;
             --water-color: #5c8df6;
@@ -14,102 +14,110 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: transparent; /* Seamless embed integration */
+            background-color: transparent;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
+        /* Smaller card dimensions */
         .tracker-card {
             background: var(--bg-color);
-            padding: 32px 24px;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            padding: 20px 16px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
             text-align: center;
-            width: 290px;
+            width: 220px; /* Reduced width */
             border: 1px solid #ededed;
             box-sizing: border-box;
         }
         .header {
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
         .liters-display {
-            font-size: 1.6rem;
+            font-size: 1.3rem; /* Slightly smaller text */
             font-weight: 600;
             color: var(--text-main);
             margin: 0;
         }
         .percentage-display {
-            font-size: 1rem;
+            font-size: 0.85rem;
             color: var(--text-sub);
-            margin: 4px 0 0 0;
+            margin: 2px 0 0 0;
         }
-        /* Circular Wave Container */
+        /* Smaller Fluid Circle Container */
         .circle-container {
             position: relative;
-            width: 190px;
-            height: 190px;
-            margin: 0 auto 24px auto;
+            width: 140px; /* Reduced from 190px */
+            height: 140px; /* Reduced from 190px */
+            margin: 0 auto 16px auto;
             border-radius: 50%;
             background: var(--water-bg);
             overflow: hidden;
             border: 1px solid #f0f0f0;
+            /* Fixes overflow bugs on some browsers */
+            transform: translateZ(0); 
         }
         .wave-wrapper {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 0%; /* Dynamic height controlled by JS */
+            height: 5%; 
             background-color: var(--water-color);
-            transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Hardware acceleration for smooth movement */
+            transform: translate3d(0, 0, 0);
+            transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        /* Animated SVG Wave overlays */
+        /* Ultra-smooth looping SVG animations */
         .wave-wrapper svg {
             position: absolute;
             left: 0;
-            width: 200%;
-            height: 40px;
+            width: 400px; /* Long enough to cycle endlessly without clipping */
+            height: 28px;
             background: transparent;
         }
         .wave-back {
-            top: -25px;
+            top: -18px;
             fill: var(--water-color);
-            opacity: 0.5;
-            animation: wave-move 4s linear infinite;
+            opacity: 0.45;
+            /* Slower background wave for depth */
+            animation: wave-slide 4s linear infinite;
         }
         .wave-front {
-            top: -20px;
+            top: -14px;
             fill: var(--water-color);
-            animation: wave-move 2.5s linear infinite;
+            /* Faster foreground wave for dynamic parallax effect */
+            animation: wave-slide 2.2s linear infinite;
         }
-        @keyframes wave-move {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        /* CSS keyframes targeting transform for 60fps rendering */
+        @keyframes wave-slide {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-200px, 0, 0); }
         }
-        /* UI Control Buttons */
+        /* UI Control Layout */
         .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
             align-items: center;
         }
         button.add-btn {
             background: #eef2ff;
             color: #2563eb;
             border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
+            padding: 10px 16px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.2s ease;
             width: 100%;
         }
         button.add-btn:hover {
             background: #dbeafe;
-            transform: scale(1.02);
+            transform: scale(1.01);
         }
         button.add-btn:disabled {
             background: #f3f4f6;
@@ -122,9 +130,9 @@
             border: none;
             color: #ef4444;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 500;
-            padding: 4px 12px;
+            padding: 2px 10px;
             border-radius: 6px;
             transition: background 0.2s;
         }
@@ -143,12 +151,12 @@
 
         <div class="circle-container">
             <div class="wave-wrapper" id="waveFill">
-                <!-- Dual SVG paths create overlapping fluid wave movement -->
-                <svg class="wave-back" viewBox="0 0 120 28" preserveAspectRatio="none">
-                    <path d="M0,15 C30,5 90,25 120,15 L120,30 L0,30 Z M120,15 C150,5 210,25 240,15 L240,30 L120,30 Z"></path>
+                <!-- Mathematically looping continuous sine wave SVG shapes -->
+                <svg class="wave-back" viewBox="0 0 200 28" preserveAspectRatio="none">
+                    <path d="M0,15 C30,5 70,25 100,15 C130,5 170,25 200,15 L200,30 L0,30 Z"></path>
                 </svg>
-                <svg class="wave-front" viewBox="0 0 120 28" preserveAspectRatio="none">
-                    <path d="M0,10 C30,20 90,0 120,10 L120,30 L0,30 Z M120,10 C150,20 210,0 240,10 L240,30 L120,30 Z"></path>
+                <svg class="wave-front" viewBox="0 0 200 28" preserveAspectRatio="none">
+                    <path d="M0,10 C40,25 60,0 100,10 C140,25 160,0 200,10 L200,30 L0,30 Z"></path>
                 </svg>
             </div>
         </div>
@@ -162,31 +170,24 @@
     <script>
         const INCREMENT = 621;
         const MAX_CLICKS = 4;
-        const GOAL = INCREMENT * MAX_CLICKS; // 2484 ml total
+        const GOAL = INCREMENT * MAX_CLICKS;
 
         let currentMl = parseInt(localStorage.getItem('notion_wave_water')) || 0;
 
         function updateUI() {
-            // Cap intake at max goal size
             if (currentMl > GOAL) currentMl = GOAL;
 
-            // Math conversions for displaying Liters cleanly
             const liters = (currentMl / 1000).toFixed(3);
             const percentage = Math.round((currentMl / GOAL) * 100);
 
-            // Update textual elements
             document.getElementById('litersText').innerText = `${parseFloat(liters)} Liters`;
             document.getElementById('percentText').innerText = `${percentage}% of your goal`;
 
-            // Adjust fluid height styling inside the circle
-            // Keeping 5% minimal fill baseline when 0% logged so wave paths stay visible at bottom edge
-            const fillHeight = currentMl === 0 ? 5 : Math.min(5 + (percentage * 0.95), 100);
+            // Sets height layout constraints
+            const fillHeight = currentMl === 0 ? 6 : Math.min(6 + (percentage * 0.94), 100);
             document.getElementById('waveFill').style.height = `${fillHeight}%`;
 
-            // Disable button if limit target reached
             document.getElementById('addButton').disabled = currentMl >= GOAL;
-
-            // Sync with local memory
             localStorage.setItem('notion_wave_water', currentMl);
         }
 
@@ -202,7 +203,6 @@
             updateUI();
         }
 
-        // Initialize state configuration on application boot
         updateUI();
     </script>
 </body>
