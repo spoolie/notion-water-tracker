@@ -6,16 +6,15 @@
     <title>Notion Water Tracker</title>
     <style>
         :root {
-            --bg-color: #191919; /* Matches Notion Dark Mode */
-            --card-bg: #202020;
-            --text-color: #ffffff;
-            --primary-blue: #3b82f6;
-            --accent-blue: #60a5fa;
+            --bg-color: #ffffff; /* Notion Light Mode / Clean White */
+            --text-main: #000000;
+            --text-sub: #7c7c7c;
+            --water-color: #5c8df6;
+            --water-bg: #f3f3f3;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: transparent; /* Seamless embed integration */
             margin: 0;
             display: flex;
             justify-content: center;
@@ -23,96 +22,187 @@
             height: 100vh;
         }
         .tracker-card {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            background: var(--bg-color);
+            padding: 32px 24px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
             text-align: center;
-            width: 280px;
-            border: 1px solid #2f2f2f;
+            width: 290px;
+            border: 1px solid #ededed;
+            box-sizing: border-box;
         }
-        h3 { margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 500; color: #a3a3a3; }
-        .progress-circle {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            margin: 16px auto;
-            border-radius: 50%;
-            background: conic-gradient(var(--primary-blue) 0deg, #2d2d2d 0deg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background 0.4s ease;
+        .header {
+            margin-bottom: 24px;
         }
-        .progress-circle::before {
-            content: "";
-            position: absolute;
-            width: 116px;
-            height: 116px;
-            background: var(--card-bg);
-            border-radius: 50%;
-        }
-        .water-value {
-            position: relative;
-            font-size: 1.8rem;
+        .liters-display {
+            font-size: 1.6rem;
             font-weight: 600;
-            color: var(--text-color);
+            color: var(--text-main);
+            margin: 0;
         }
-        .unit { font-size: 0.9rem; color: #a3a3a3; font-weight: 400; }
-        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        button {
-            background: #2d2d2d;
+        .percentage-display {
+            font-size: 1rem;
+            color: var(--text-sub);
+            margin: 4px 0 0 0;
+        }
+        /* Circular Wave Container */
+        .circle-container {
+            position: relative;
+            width: 190px;
+            height: 190px;
+            margin: 0 auto 24px auto;
+            border-radius: 50%;
+            background: var(--water-bg);
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+        }
+        .wave-wrapper {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%; /* Dynamic height controlled by JS */
+            background-color: var(--water-color);
+            transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Animated SVG Wave overlays */
+        .wave-wrapper svg {
+            position: absolute;
+            left: 0;
+            width: 200%;
+            height: 40px;
+            background: transparent;
+        }
+        .wave-back {
+            top: -25px;
+            fill: var(--water-color);
+            opacity: 0.5;
+            animation: wave-move 4s linear infinite;
+        }
+        .wave-front {
+            top: -20px;
+            fill: var(--water-color);
+            animation: wave-move 2.5s linear infinite;
+        }
+        @keyframes wave-move {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        /* UI Control Buttons */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+        button.add-btn {
+            background: #eef2ff;
+            color: #2563eb;
             border: none;
-            color: var(--text-color);
-            padding: 10px 16px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 1rem;
             transition: all 0.2s ease;
-            flex: 1;
+            width: 100%;
         }
-        button:hover { background: var(--primary-blue); }
-        button.reset { background: transparent; color: #ef4444; flex: none; width: 44px; padding: 10px 0; }
-        button.reset:hover { background: rgba(239, 68, 68, 0.1); }
+        button.add-btn:hover {
+            background: #dbeafe;
+            transform: scale(1.02);
+        }
+        button.add-btn:disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        button.reset-btn {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        button.reset-btn:hover {
+            background: rgba(239, 68, 68, 0.08);
+        }
     </style>
 </head>
 <body>
 
     <div class="tracker-card">
-        <h3>Daily Hydration</h3>
-        <div class="progress-circle" id="progressCircle">
-            <div class="water-value"><span id="currentOz">0</span><span class="unit"> /64 oz</span></div>
+        <div class="header">
+            <div class="liters-display" id="litersText">0 Liters</div>
+            <div class="percentage-display" id="percentText">0% of your goal</div>
         </div>
+
+        <div class="circle-container">
+            <div class="wave-wrapper" id="waveFill">
+                <!-- Dual SVG paths create overlapping fluid wave movement -->
+                <svg class="wave-back" viewBox="0 0 120 28" preserveAspectRatio="none">
+                    <path d="M0,15 C30,5 90,25 120,15 L120,30 L0,30 Z M120,15 C150,5 210,25 240,15 L240,30 L120,30 Z"></path>
+                </svg>
+                <svg class="wave-front" viewBox="0 0 120 28" preserveAspectRatio="none">
+                    <path d="M0,10 C30,20 90,0 120,10 L120,30 L0,30 Z M120,10 C150,20 210,0 240,10 L240,30 L120,30 Z"></path>
+                </svg>
+            </div>
+        </div>
+
         <div class="btn-group">
-            <button class="reset" onclick="resetWater()">↺</button>
-            <button onclick="addWater(8)">+8 oz</button>
-            <button onclick="addWater(16)">+16 oz</button>
+            <button class="add-btn" id="addButton" onclick="addWater()">+621 ml</button>
+            <button class="reset-btn" onclick="resetWater()">Reset Progress</button>
         </div>
     </div>
 
     <script>
-        const GOAL = 64;
-        let current = parseInt(localStorage.getItem('notion_water_intake')) || 0;
+        const INCREMENT = 621;
+        const MAX_CLICKS = 4;
+        const GOAL = INCREMENT * MAX_CLICKS; // 2484 ml total
+
+        let currentMl = parseInt(localStorage.getItem('notion_wave_water')) || 0;
 
         function updateUI() {
-            document.getElementById('currentOz').innerText = current;
-            const percentage = Math.min((current / GOAL) * 360, 360);
-            document.getElementById('progressCircle').style.background = `conic-gradient(var(--primary-blue) ${percentage}deg, #2d2d2d ${percentage}deg)`;
-            localStorage.setItem('notion_water_intake', current);
+            // Cap intake at max goal size
+            if (currentMl > GOAL) currentMl = GOAL;
+
+            // Math conversions for displaying Liters cleanly
+            const liters = (currentMl / 1000).toFixed(3);
+            const percentage = Math.round((currentMl / GOAL) * 100);
+
+            // Update textual elements
+            document.getElementById('litersText').innerText = `${parseFloat(liters)} Liters`;
+            document.getElementById('percentText').innerText = `${percentage}% of your goal`;
+
+            // Adjust fluid height styling inside the circle
+            // Keeping 5% minimal fill baseline when 0% logged so wave paths stay visible at bottom edge
+            const fillHeight = currentMl === 0 ? 5 : Math.min(5 + (percentage * 0.95), 100);
+            document.getElementById('waveFill').style.height = `${fillHeight}%`;
+
+            // Disable button if limit target reached
+            document.getElementById('addButton').disabled = currentMl >= GOAL;
+
+            // Sync with local memory
+            localStorage.setItem('notion_wave_water', currentMl);
         }
 
-        function addWater(amount) {
-            current += amount;
-            updateUI();
+        function addWater() {
+            if (currentMl < GOAL) {
+                currentMl += INCREMENT;
+                updateUI();
+            }
         }
 
         function resetWater() {
-            current = 0;
+            currentMl = 0;
             updateUI();
         }
 
-        // Initialize on load
+        // Initialize state configuration on application boot
         updateUI();
     </script>
 </body>
