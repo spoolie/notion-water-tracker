@@ -7,14 +7,14 @@
     <style>
         :root {
             --bg-color: #ffffff;
-            --text-main: #333333; /* Darker font color for readability */
+            --text-main: #333333;
             --text-sub: #7a7a7a;
             --water-color: #4992ff;
             --water-bg: #f2f7ff;
             --btn-blue-text: #2563eb;
-            --btn-blue-bg: #eff6ff; /* Lighter version of font color */
+            --btn-blue-bg: #eff6ff;
             --btn-red-text: #e11d48;
-            --btn-red-bg: #fff1f2;  /* Lighter version of font color */
+            --btn-red-bg: #fff1f2;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -25,14 +25,13 @@
             align-items: center;
             height: 100vh;
         }
-        /* Wider card profile */
         .tracker-card {
             background: var(--bg-color);
             padding: 20px 24px;
             border-radius: 20px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
             text-align: center;
-            width: 230px; /* Increased card width */
+            width: 230px;
             border: 1px solid #eaeaea;
             box-sizing: border-box;
         }
@@ -42,7 +41,7 @@
         .liters-display {
             font-size: 1.15rem;
             font-weight: 600;
-            color: var(--text-main); /* Updated to darker font color */
+            color: var(--text-main);
             margin: 0;
         }
         .percentage-display {
@@ -50,7 +49,6 @@
             color: var(--text-sub);
             margin: 2px 0 0 0;
         }
-        /* Wave Bowl Container */
         .circle-container {
             position: relative;
             width: 110px;
@@ -67,7 +65,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 5%; 
+            height: 0%; /* JS now controls this cleanly from 0% to 100% */
             background-color: var(--water-color);
             transform: translate3d(0, 0, 0);
             transition: height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -93,10 +91,9 @@
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-200px, 0, 0); }
         }
-        /* Side-by-Side Action Row */
         .btn-group {
             display: flex;
-            gap: 10px; /* Places them cleanly side-by-side */
+            gap: 10px;
             width: 100%;
         }
         button {
@@ -112,11 +109,10 @@
         button:active {
             transform: scale(0.97);
         }
-        /* Smaller +621ml Button with a pastel blue background tint */
         button.add-btn {
             background: var(--btn-blue-bg);
             color: var(--btn-blue-text);
-            flex: 2; /* Takes up slightly more space than reset */
+            flex: 2;
         }
         button.add-btn:hover {
             background: #dbeafe;
@@ -127,7 +123,6 @@
             cursor: not-allowed;
             transform: none;
         }
-        /* Reset Button beside the tracking button with a pastel red background tint */
         button.reset-btn {
             background: var(--btn-red-bg);
             color: var(--btn-red-text);
@@ -179,9 +174,17 @@
             document.getElementById('litersText').innerText = `${parseFloat(liters)} Liters`;
             document.getElementById('percentText').innerText = `${percentage}% Done`;
 
-            const fillHeight = currentMl === 0 ? 6 : Math.min(6 + (percentage * 0.94), 100);
-            document.getElementById('waveFill').style.height = `${fillHeight}%`;
+            // --- FIXED MATHEMATICAL ALIGNMENT ---
+            // If empty (0%), stay at 0% block height layout.
+            // If full (100%), hit exactly 100% capacity block height layout.
+            // For increments (25%, 50%, 75%), we use an offset factor to keep the visual center accurate.
+            let fillHeight = percentage;
+            if (percentage > 0 && percentage < 100) {
+                // Adjusts the wave wrapper down slightly so the average wave crest sits perfectly dead center at 50%
+                fillHeight = percentage - 4; 
+            }
 
+            document.getElementById('waveFill').style.height = `${fillHeight}%`;
             document.getElementById('addButton').disabled = currentMl >= GOAL;
             localStorage.setItem('notion_wave_water', currentMl);
         }
@@ -198,7 +201,6 @@
             updateUI();
         }
 
-        // Run UI update script immediately on mount
         updateUI();
     </script>
 </body>
