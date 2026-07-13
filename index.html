@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notion Water Tracker</title>
+    <!-- 1. ADDED SUPABASE LIBRARY SOURCE LINK -->
+    <script src="https://jsdelivr.net"></script>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -65,7 +67,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 0%; /* JS now controls this cleanly from 0% to 100% */
+            height: 0%;
             background-color: var(--water-color);
             transform: translate3d(0, 0, 0);
             transition: height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -163,7 +165,41 @@
         const MAX_CLICKS = 4;
         const GOAL = INCREMENT * MAX_CLICKS;
 
-        let currentMl = parseInt(localStorage.getItem('notion_wave_water')) || 0;
+        // 2. CONNECTED CLOUD DATABASE SPECIFICATIONS
+        const SUPABASE_URL = "https://supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_VAUrzcS7gynx6V_kfJLpBQ_XsUgB8Ck";
+
+        // Initialize Supabase Client Connection
+        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentMl = 0;
+
+        // 3. ADDED CLOUD DATA INGESTION ENGINE
+        async function fetchWaterProgress() {
+            const { data, error } = await supabase
+                .from('water_tracking')
+                .select('current_ml')
+                .eq('id', 1)
+                .single();
+
+            if (data) {
+                currentMl = data.current_ml;
+                updateUI();
+            }
+        }
+
+        // 4. ADDED CLOUD DATA SYNCHRONIZATION PIPELINE
+        async function syncToCloud(newValue) {
+            const { error } = await supabase
+                .from('water_tracking')
+                .update({ current_ml: newValue })
+                .eq('id', 1);
+            
+            if (!error) {
+                currentMl = newValue;
+                updateUI();
+            }
+        }
 
         function updateUI() {
             if (currentMl > GOAL) currentMl = GOAL;
@@ -174,34 +210,28 @@
             document.getElementById('litersText').innerText = `${parseFloat(liters)} Liters`;
             document.getElementById('percentText').innerText = `${percentage}% Done`;
 
-            // --- FIXED MATHEMATICAL ALIGNMENT ---
-            // If empty (0%), stay at 0% block height layout.
-            // If full (100%), hit exactly 100% capacity block height layout.
-            // For increments (25%, 50%, 75%), we use an offset factor to keep the visual center accurate.
             let fillHeight = percentage;
             if (percentage > 0 && percentage < 100) {
-                // Adjusts the wave wrapper down slightly so the average wave crest sits perfectly dead center at 50%
                 fillHeight = percentage - 4; 
             }
 
             document.getElementById('waveFill').style.height = `${fillHeight}%`;
             document.getElementById('addButton').disabled = currentMl >= GOAL;
-            localStorage.setItem('notion_wave_water', currentMl);
         }
 
         function addWater() {
             if (currentMl < GOAL) {
-                currentMl += INCREMENT;
-                updateUI();
+                const targetMl = currentMl + INCREMENT;
+                syncToCloud(targetMl); // Replaced local storage with database push
             }
         }
 
         function resetWater() {
-            currentMl = 0;
-            updateUI();
+            syncToCloud(0); // Replaced local storage with database push
         }
 
-        updateUI();
+        // 5. BOOT DEVICE SYNC SYSTEM IMMEDIATE INGESTION
+        fetchWaterProgress();
     </script>
 </body>
 </html>
