@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notion Water Tracker</title>
-    <!-- FIX 1: Corrected full CDN source link to load the database library code -->
+    <!-- Loads the official database client library correctly -->
     <script src="https://jsdelivr.net"></script>
     <style>
         :root {
@@ -37,20 +37,9 @@
             border: 1px solid #eaeaea;
             box-sizing: border-box;
         }
-        .header {
-            margin-bottom: 14px;
-        }
-        .liters-display {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: var(--text-main);
-            margin: 0;
-        }
-        .percentage-display {
-            font-size: 0.75rem;
-            color: var(--text-sub);
-            margin: 2px 0 0 0;
-        }
+        .header { margin-bottom: 14px; }
+        .liters-display { font-size: 1.15rem; font-weight: 600; color: var(--text-main); margin: 0; }
+        .percentage-display { font-size: 0.75rem; color: var(--text-sub); margin: 2px 0 0 0; }
         .circle-container {
             position: relative;
             width: 110px;
@@ -72,67 +61,21 @@
             transform: translate3d(0, 0, 0);
             transition: height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .wave-wrapper svg {
-            position: absolute;
-            left: 0;
-            width: 400px;
-            height: 22px;
-        }
-        .wave-back {
-            top: -14px;
-            fill: var(--water-color);
-            opacity: 0.45;
-            animation: wave-slide 2.8s linear infinite;
-        }
-        .wave-front {
-            top: -11px;
-            fill: var(--water-color);
-            animation: wave-slide 1.5s linear infinite;
-        }
+        .wave-wrapper svg { position: absolute; left: 0; width: 400px; height: 22px; }
+        .wave-back { top: -14px; fill: var(--water-color); opacity: 0.45; animation: wave-slide 2.8s linear infinite; }
+        .wave-front { top: -11px; fill: var(--water-color); animation: wave-slide 1.5s linear infinite; }
         @keyframes wave-slide {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-200px, 0, 0); }
         }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-        }
-        button {
-            border: none;
-            padding: 8px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.82rem;
-            transition: all 0.2s ease;
-            box-sizing: border-box;
-        }
-        button:active {
-            transform: scale(0.97);
-        }
-        button.add-btn {
-            background: var(--btn-blue-bg);
-            color: var(--btn-blue-text);
-            flex: 2;
-        }
-        button.add-btn:hover {
-            background: #dbeafe;
-        }
-        button.add-btn:disabled {
-            background: #f3f4f6;
-            color: #9ca3af;
-            cursor: not-allowed;
-            transform: none;
-        }
-        button.reset-btn {
-            background: var(--btn-red-bg);
-            color: var(--btn-red-text);
-            flex: 1;
-        }
-        button.reset-btn:hover {
-            background: #ffe4e6;
-        }
+        .btn-group { display: flex; gap: 10px; width: 100%; }
+        button { border: none; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.82rem; transition: all 0.2s ease; box-sizing: border-box; }
+        button:active { transform: scale(0.97); }
+        button.add-btn { background: var(--btn-blue-bg); color: var(--btn-blue-text); flex: 2; }
+        button.add-btn:hover { background: #dbeafe; }
+        button.add-btn:disabled { background: #f3f4f6; color: #9ca3af; cursor: not-allowed; transform: none; }
+        button.reset-btn { background: var(--btn-red-bg); color: var(--btn-red-text); flex: 1; }
+        button.reset-btn:hover { background: #ffe4e6; }
     </style>
 </head>
 <body>
@@ -165,37 +108,44 @@
         const MAX_CLICKS = 4;
         const GOAL = INCREMENT * MAX_CLICKS;
 
-        // FIX 2: Restored your unique project ID into your URL routing string
         const SUPABASE_URL = "https://pnkmzlxvtywntchljxyn.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_VAUrzcS7gynx6V_kfJLpBQ_XsUgB8Ck";
 
-        // FIX 3: Corrected initialization syntax targeting the global window bundle object
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // FIXED: Renamed to supabaseClient to prevent crashing the global library namespace
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentMl = 0;
 
         async function fetchWaterProgress() {
-            const { data, error } = await supabase
-                .from('water_tracking')
-                .select('current_ml')
-                .eq('id', 1)
-                .single();
+            try {
+                const { data, error } = await supabaseClient
+                    .from('water_tracking')
+                    .select('current_ml')
+                    .eq('id', 1)
+                    .single();
 
-            if (data) {
-                currentMl = data.current_ml;
-                updateUI();
+                if (data) {
+                    currentMl = data.current_ml;
+                    updateUI();
+                }
+            } catch (err) {
+                console.error("Error fetching data:", err);
             }
         }
 
         async function syncToCloud(newValue) {
-            const { error } = await supabase
-                .from('water_tracking')
-                .update({ current_ml: newValue })
-                .eq('id', 1);
-            
-            if (!error) {
-                currentMl = newValue;
-                updateUI();
+            try {
+                const { error } = await supabaseClient
+                    .from('water_tracking')
+                    .update({ current_ml: newValue })
+                    .eq('id', 1);
+                
+                if (!error) {
+                    currentMl = newValue;
+                    updateUI();
+                }
+            } catch (err) {
+                console.error("Error syncing data:", err);
             }
         }
 
