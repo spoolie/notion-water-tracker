@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notion Water Tracker</title>
-    <!-- Loads the official database client library correctly -->
-    <script src="https://jsdelivr.net"></script>
+    
+    <!-- THE MANUALLY VERIFIED, UNTRUNCATED CDN SCRIPT TAG -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --bg-color: #ffffff;
@@ -108,17 +110,18 @@
         const MAX_CLICKS = 4;
         const GOAL = INCREMENT * MAX_CLICKS;
 
-        const SUPABASE_URL = "https://pnkmzlxvtywntchljxyn.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_VAUrzcS7gynx6V_kfJLpBQ_XsUgB8Ck";
+        // THE CORRECT HARDCODED DATABASE TARGETS
+        const URL_STRING = "https://pnkmzlxvtywntchljxyn.supabase.co";
+        const KEY_STRING = "sb_publishable_VAUrzcS7gynx6V_kfJLpBQ_XsUgB8Ck";
 
-        // FIXED: Renamed to supabaseClient to prevent crashing the global library namespace
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Call the global variable constructor using window['supabase'] mapping directly
+        const clientInstance = window['supabase'].createClient(URL_STRING, KEY_STRING);
 
         let currentMl = 0;
 
         async function fetchWaterProgress() {
             try {
-                const { data, error } = await supabaseClient
+                const { data, error } = await clientInstance
                     .from('water_tracking')
                     .select('current_ml')
                     .eq('id', 1)
@@ -135,7 +138,7 @@
 
         async function syncToCloud(newValue) {
             try {
-                const { error } = await supabaseClient
+                const { error } = await clientInstance
                     .from('water_tracking')
                     .update({ current_ml: newValue })
                     .eq('id', 1);
