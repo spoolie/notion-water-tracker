@@ -1,8 +1,7 @@
 # Notion Cloud Water Tracker Widget
 
-A minimal, real-time sync water tracking widget designed to be embedded directly into Notion workspaces via GitHub Pages. 
+A minimal, real-time sync water tracking widget designed to be embedded directly into Notion workspaces via GitHub Pages. I created this as my bottle is 621ml and every other trackers I saw would either only track 500ml or 1L. 
 
-Live Demo: https://github.io
 
 ## The Problem
 Notion embeds run inside isolated client webviews. If you use standard browser `localStorage` to save state, the data will not sync between your desktop app and mobile app. Furthermore, Notion's mobile app frequently clears webview caches, resetting your progress to zero unexpectedly.
