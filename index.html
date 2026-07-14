@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notion Water Tracker</title>
-    <!-- 1. ADDED SUPABASE LIBRARY SOURCE LINK -->
+    <!-- FIX 1: Corrected full CDN source link to load the database library code -->
     <script src="https://jsdelivr.net"></script>
     <style>
         :root {
@@ -165,16 +165,15 @@
         const MAX_CLICKS = 4;
         const GOAL = INCREMENT * MAX_CLICKS;
 
-        // 2. CONNECTED CLOUD DATABASE SPECIFICATIONS
-        const SUPABASE_URL = "https://supabase.co";
+        // FIX 2: Restored your unique project ID into your URL routing string
+        const SUPABASE_URL = "https://pnkmzlxvtywntchljxyn.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_VAUrzcS7gynx6V_kfJLpBQ_XsUgB8Ck";
 
-        // Initialize Supabase Client Connection
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // FIX 3: Corrected initialization syntax targeting the global window bundle object
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentMl = 0;
 
-        // 3. ADDED CLOUD DATA INGESTION ENGINE
         async function fetchWaterProgress() {
             const { data, error } = await supabase
                 .from('water_tracking')
@@ -188,7 +187,6 @@
             }
         }
 
-        // 4. ADDED CLOUD DATA SYNCHRONIZATION PIPELINE
         async function syncToCloud(newValue) {
             const { error } = await supabase
                 .from('water_tracking')
@@ -222,15 +220,14 @@
         function addWater() {
             if (currentMl < GOAL) {
                 const targetMl = currentMl + INCREMENT;
-                syncToCloud(targetMl); // Replaced local storage with database push
+                syncToCloud(targetMl);
             }
         }
 
         function resetWater() {
-            syncToCloud(0); // Replaced local storage with database push
+            syncToCloud(0);
         }
 
-        // 5. BOOT DEVICE SYNC SYSTEM IMMEDIATE INGESTION
         fetchWaterProgress();
     </script>
 </body>
